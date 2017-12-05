@@ -8,13 +8,13 @@ import shutil
 class ProtobufConan(ConanFile):
     name = "Protobuf"
     version = "3.5.0"
-    url = "https://github.com/bincrafters/conan-protobuf"
+    url = "https://github.com/pkarasev3/conan-protobuf"
     license = "https://github.com/google/protobuf/blob/v{}/LICENSE".format(version)
-    requires = "zlib/1.2.11@conan/stable"
+    requires = "zlib/1.2.11@lasote/stable"
     settings = "os", "compiler", "build_type", "arch"
    # exports = "CMakeLists.txt", "lib*.cmake", "extract_includes.bat.in", "protoc.cmake", "tests.cmake", "change_dylib_names.sh"
     options = {"shared": [True, False]}
-    default_options = "shared=False"
+    default_options = "shared=True"
     generators = "cmake"
     folder = "protobuf-{}".format(version)
 
@@ -56,6 +56,7 @@ conan_basic_setup()''')
         args += ["-DCMAKE_INSTALL_PREFIX={}/install".format(os.getcwd())] # We do install, since we need some cmake files
         args += ["-DBUILD_SHARED_LIBS={}".format('ON' if self.options.shared else 'OFF')]
         args += ["-Dprotobuf_WITH_ZLIB=ON"]
+        self.source()
         if self.settings.compiler == "Visual Studio":
             if self.settings.compiler.runtime == "MT" or self.settings.compiler.runtime == "MTd":
                 args += ["-Dprotobuf_MSVC_STATIC_RUNTIME=ON"]
@@ -64,7 +65,13 @@ conan_basic_setup()''')
         cmake = CMake(self)
         self.run('cmake {}/cmake {} {}'.format(self.folder, cmake.command_line, ' '.join(args)))
         self.output.warn("CMAKE OUTPUT: {}".format(cmake.command_line))
-        self.run("cmake --build . {} --target install".format(cmake.build_config))
+
+#        build_extra_args = list()
+#        build_extra_args += ['-- -j 6 -k -s'] if self.settings.compiler != 'Visual Studio' and not self.scope.xcode else ['']
+#        build_extra_args = ' '.join(build_extra_args)
+#        self.run('cmake --build . {:s} {:s}'.format(cmake.build_config, build_extra_args))
+
+        self.run("cmake --build . {} --target install -- -j 6".format(cmake.build_config))
 
     def package(self):
         # Install FindProtobuf files:
@@ -113,7 +120,7 @@ set_target_properties(protobuf::libprotobuf PROPERTIES''') # hard path to zlib.
 
             # Copy the exe to bin
             # we need some sort of dynlib converter for macosx here, see memshardeds protobuf
-            self.copy("protoc", "bin", "bin", keep_path=False)
+            self.copy("protoc", dst="bin", src="bin", keep_path=False)
 
     def package_info(self):
         basename = "libprotobuf"
@@ -127,6 +134,6 @@ set_target_properties(protobuf::libprotobuf PROPERTIES''') # hard path to zlib.
             if self.options.shared:
                 self.cpp_info.defines = ["PROTOBUF_USE_DLLS"]
         elif self.settings.os == "Macos":
-            self.cpp_info.libs = [basename + ".a"] if not self.options.shared else [basename + ".9.dylib"]
+            self.cpp_info.libs = [basename + ".a"] if not self.options.shared else [basename + ".dylib"]
         else:
-            self.cpp_info.libs = [basename + ".a"] if not self.options.shared else [basename + ".so.9"]
+            self.cpp_info.libs = [basename + ".a"] if not self.options.shared else [basename + ".so"]
