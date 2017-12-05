@@ -7,10 +7,9 @@ import shutil
 
 class ProtobufConan(ConanFile):
     name = "Protobuf"
-    version = "3.5.1-1" #this is the version of this conan file
-    upstreamVersion = "3.5.0" #this is the version of protobuf we are using
+    version = "3.5.0"
     url = "https://github.com/pkarasev3/conan-protobuf"
-    license = "https://github.com/google/protobuf/blob/v{}/LICENSE".format(upstreamVersion)
+    license = "https://github.com/google/protobuf/blob/v{}/LICENSE".format(version)
     requires = "zlib/1.2.11@lasote/stable"
     settings = "os", "compiler", "build_type", "arch"
    # exports = "CMakeLists.txt", "lib*.cmake", "extract_includes.bat.in", "protoc.cmake", "tests.cmake", "change_dylib_names.sh"
@@ -41,7 +40,7 @@ class ProtobufConan(ConanFile):
 
     def source(self):
         tools.download("https://github.com/google/protobuf/"
-                       "releases/download/v{0}/protobuf-cpp-{0}.zip".format(self.upstreamVersion),
+                       "releases/download/v{0}/protobuf-cpp-{0}.zip".format(self.version),
                        "protobuf.zip")
         tools.unzip("protobuf.zip")
         os.unlink("protobuf.zip")
