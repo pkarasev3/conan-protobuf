@@ -137,3 +137,6 @@ set_target_properties(protobuf::libprotobuf PROPERTIES''') # hard path to zlib.
             self.cpp_info.libs = [basename + ".a"] if not self.options.shared else [basename + ".dylib"]
         else:
             self.cpp_info.libs = [basename + ".a"] if not self.options.shared else [basename + ".so"]
+
+        print("cpp info libs: " + self.cpp_info.libs)
+
