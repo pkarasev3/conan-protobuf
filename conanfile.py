@@ -69,7 +69,7 @@ conan_basic_setup()''')
         build_extra_args = list()
         build_extra_args += ['-- -j 6 -k -s'] if self.settings.compiler != 'Visual Studio' and not self.scope.xcode else ['']
         build_extra_args = ' '.join(build_extra_args)
-        self.run('cmake --build . {:s} {:s}'.format(cmake.build_config, build_extra_args))
+        self.run('cmake --build . {:s}  --target install  {:s}'.format(cmake.build_config, build_extra_args))
 
 
     def package(self):
@@ -137,5 +137,5 @@ set_target_properties(protobuf::libprotobuf PROPERTIES''') # hard path to zlib.
         else:
             self.cpp_info.libs = [basename + ".a"] if not self.options.shared else [basename + ".so"]
 
-        print("cpp info libs: " + self.cpp_info.libs)
+        
 
