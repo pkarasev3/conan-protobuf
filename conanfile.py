@@ -7,7 +7,7 @@ import shutil
 
 class ProtobufConan(ConanFile):
     name = "Protobuf"
-    version = "3.5.0"
+    version = "3.5.1-1"
     url = "https://github.com/pkarasev3/conan-protobuf"
     license = "https://github.com/google/protobuf/blob/v{}/LICENSE".format(version)
     requires = "zlib/1.2.11@lasote/stable"
@@ -66,12 +66,11 @@ conan_basic_setup()''')
         self.run('cmake {}/cmake {} {}'.format(self.folder, cmake.command_line, ' '.join(args)))
         self.output.warn("CMAKE OUTPUT: {}".format(cmake.command_line))
 
-#        build_extra_args = list()
-#        build_extra_args += ['-- -j 6 -k -s'] if self.settings.compiler != 'Visual Studio' and not self.scope.xcode else ['']
-#        build_extra_args = ' '.join(build_extra_args)
-#        self.run('cmake --build . {:s} {:s}'.format(cmake.build_config, build_extra_args))
+        build_extra_args = list()
+        build_extra_args += ['-- -j 6 -k -s'] if self.settings.compiler != 'Visual Studio' and not self.scope.xcode else ['']
+        build_extra_args = ' '.join(build_extra_args)
+        self.run('cmake --build . {:s} {:s}'.format(cmake.build_config, build_extra_args))
 
-        self.run("cmake --build . {} --target install -- -j 6".format(cmake.build_config))
 
     def package(self):
         # Install FindProtobuf files:
